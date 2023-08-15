@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pomodoro Timer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #ffff;
+    }
+
+    #timer {
+      font-size: 10rem;
+      margin-bottom: 1rem;
+    }
+
+    #controls {
+      display: flex;
+      gap: 1rem;
+    }
+
+    #breakControls {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    #startBtn, #resetBtn {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #resetBtn {
+      background-color: #f44336;
+    }
+
+    #shortBreakBtn, #longBreakBtn, #sessionBtn {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background-color: #b3b4b5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      .progress-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .progress-check {
+      width: 12px;
+      height: 12px;
+      border: 2px solid #4caf50;
+      border-radius: 50%;
+    }
+    }
+  </style>
+</head>
+<body>
+  <div id="timer">25:00</div>
+  <div id="controls">
+    <button id="startBtn">Start</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+  <div id="breakControls">
+   <button id="sessionBtn">Study Session</button>
+    <button id="shortBreakBtn">Short Break</button>
+    <button id="longBreakBtn">Long Break</button>
+  </div>
+
+
+  <script>
+    let timerInterval;
+    let timeLeft = 1500; // 25 minutes in seconds
+    let isTimerRunning = false;
+
+    const timerDisplay = document.getElementById("timer");
+    const startBtn = document.getElementById("startBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const shortBreakBtn = document.getElementById("shortBreakBtn");
+    const longBreakBtn = document.getElementById("longBreakBtn");
+    const sessionBtn = document.getElementById("sessionBtn");
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+
+    function startTimer() {
+      if (!isTimerRunning) {
+        timerInterval = setInterval(() => {
+          if (timeLeft > 0) {
+            timeLeft--;
+            updateTimerDisplay();
+          } else {
+            clearInterval(timerInterval);
+            alert("Pomodoro session completed!");
+            isTimerRunning = false;
+            startBtn.textContent = "Start";
+          }
+        }, 1000);
+
+        isTimerRunning = true;
+        startBtn.textContent = "Pause";
+      } else {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        startBtn.textContent = "Resume";
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timeLeft = 1500;
+      updateTimerDisplay();
+      isTimerRunning = false;
+      startBtn.textContent = "Start";
+    }
+
+    function startBreak(breakTime) {
+      clearInterval(timerInterval);
+      timeLeft = breakTime;
+      updateTimerDisplay();
+      isTimerRunning = false;
+      startBtn.textContent = "Start";
+    }
+
+    function startSession() {
+      clearInterval(timerInterval);
+      timeLeft = 1500;
+      updateTimerDisplay();
+      isTimerRunning = false;
+      startBtn.textContent = "Start";
+    }
+
+    startBtn.addEventListener("click", startTimer);
+    resetBtn.addEventListener("click", resetTimer);
+    shortBreakBtn.addEventListener("click", () => startBreak(300)); // 5 minutes in seconds
+    longBreakBtn.addEventListener("click", () => startBreak(900)); // 15 minutes in seconds
+    sessionBtn.addEventListener("click", startSession);
+
+
+    const progressBar = document.getElementById("progressBar");
+    const progressDots = progressBar.querySelectorAll(".progress-dot");
+    const progressCheck = document.getElementById("progressCheck");
+
+    let completedSessions = 0;
+
+    function updateProgress() {
+      completedSessions++;
+      progressDots[completedSessions - 1].style.backgroundColor = "rgba(0, 128, 0, 1)";
+
+      if (completedSessions === 4) {
+        progressCheck.style.display = "block";
+      }
+    }
+
+    function resetProgress() {
+      completedSessions = 0;
+      progressDots.forEach(dot => dot.style.backgroundColor = "rgba(0, 0, 0, 0.2)");
+      progressCheck.style.display = "none";
+    }
+  </script>
+</body>
+</html>
